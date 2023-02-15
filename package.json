@@ -1,11 +1,29 @@
 {
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "nodemon": "^2.0.20",
     "react": "^18.2.0",
     "react-app": "^1.1.2",
     "sequelize": "^6.28.0",
     "sqlite3": "^5.1.4"
-  }
+  },
+  "name": "pj-backend-project",
+  "description": "movie watchlist tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesWilding/PJ-backend-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesWilding/PJ-backend-project/issues"
+  },
+  "homepage": "https://github.com/JamesWilding/PJ-backend-project#readme"
 }
