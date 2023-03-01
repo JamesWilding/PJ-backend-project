@@ -1,12 +1,17 @@
 const express = require('express');
 const app = express();
-const {Movie} = require("./db/Movie")
-const {User} = require('./db/User')
-const bcrypt = require('bcrypt')
+const {Movie} = require("./db/Movie");
+const {User} = require('./db/User');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const SALT_COUNT = 7;
+const SALT_COUNT = 8
+const SIGNING_SECRET = process.env.SIGNING_SECRET
+
 
 app.use(express.json())
+
 
 app.get("/movies", async(req, res) => {
     const movies = await Movie.findAll();
@@ -35,38 +40,38 @@ app.put('/movies/:id', async (req, res) => {
     res.send(`Updated film`);
 });
 
-app.post('/register' , async (req,res,next) =>{
-try {
+app.post('/register', async (req,res,next) => {
+  try {
     const {username, password} = req.body;
     const hashed = await bcrypt.hash(password, SALT_COUNT)
-    await User.create ({username, password:hashed })
-    res.send(`successfully created user ${username}`);
-  } catch (error){
+    const {id} = await User.create ({username, password:hashed })
+    const token = jwt.sign({id,username}, SIGNING_SECRET)
+    res.send({message: "User Registered" , token});
+  } catch (error) {
     console.log(error);
-    next(error)
-}
+    next(error) 
+  }
 })
 
 app.post("/login", async (req,res,next) =>{
-    try {
+  try{
       const {username, password} = req.body;
       const user = await User.findOne({where:{username}})
-      if (!user){
-        res.send('User is not found')
-        return
-      }
-      const isMatch = await bcrypt.compare(password, user.password)
-    if(!isMatch){
-      res.status(401).send('incorrect username or password')
-      return
+  if(!user){
+    res.send('User not found')
     }
-  
-    res.send(`successfully logged in user ${username}`)
+    const isMatch = await bcrypt.compare(password, user.password)
+    if(isMatch){
+      const token = jwt.sign(username, SIGNING_SECRET)
+      res.send({ message: "You're now logged in" , token})
+    }else{
+      res.send("Username or Password are incorrect") 
+    }
     } catch (error) {
       console.log(error);
       next(error)
     }
-  })
+    })
 
 
 // we export the app, not listening in here, so that we can run tests
